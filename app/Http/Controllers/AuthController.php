@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\CreateUserRequest;
 use App\Http\Requests\LoginRequest;
-use App\Http\Resources\TokenResource;
 use App\Models\User;
 use App\Http\Resources\UserResource;
 use Hash;

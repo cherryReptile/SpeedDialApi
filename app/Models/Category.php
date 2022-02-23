@@ -36,6 +36,13 @@ class Category extends Model
         'name'
     ];
 
+    public static function getRules(): array
+    {
+        return [
+            'name' => 'required|string|max:255'
+        ];
+    }
+
     public function dial(): HasMany
     {
         return $this->hasMany(Dial::class, 'category_id', 'id')->orderBy('id');
