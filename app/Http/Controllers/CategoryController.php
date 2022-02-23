@@ -17,16 +17,18 @@ class CategoryController extends Controller
     {
         $user = \Auth::user();
         $user->category()->create($request->all());
+        $category = Category::latest()->firstOrFail();
 
-        return Response::json([], 201);
+        return Response::json([], 201)->withHeaders([
+            'Location' => 'category/' . $category->id
+        ]);
     }
 
-    public function show(Request $request): CategoryResource
+    public function show($category): CategoryResource
     {
-        $user = \Auth::user();
-        $categories = Category::whereUserId($user->id)->get();
+        $category = Category::whereId($category)->firstOrFail();
 
-        return CategoryResource::make($categories);
+        return CategoryResource::make($category);
     }
 
     public function update(UpdateCategoryRequest $request, $category): CategoryResource
