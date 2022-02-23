@@ -39,6 +39,13 @@ class Dial extends Model
         'active'
     ];
 
+    public static function getRules()
+    {
+        return [
+            'url' => 'required|url'
+        ];
+    }
+
     public function category(): BelongsTo
     {
         return $this->belongsTo(Category::class, 'id');
