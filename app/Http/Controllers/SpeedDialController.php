@@ -20,7 +20,7 @@ class SpeedDialController extends Controller
     public function create($category, CreateDialRequest $request): JsonResponse
     {
         $category = Category::whereId($category)->firstOrFail();
-        $document = new Document($request->post('doc'), true);
+        $document = new Document($request->post('url'), true);
         $title = $document->first('title')->text();
         $description = (string)$document->first('meta[name=description]')->getAttribute('content');
         $category->dial()->create([
@@ -28,9 +28,10 @@ class SpeedDialController extends Controller
             'description' => $description,
             'active' => true
         ]);
+        $dial = Dial::latest()->firstOrFail();
 
         return Response::json([], 201)->withHeaders([
-            'Location' => 'category/' . $category->id
+            'Location' => 'dial/' . $dial->id
         ]);
     }
 
@@ -49,7 +50,7 @@ class SpeedDialController extends Controller
         return DialResource::make($dial);
     }
 
-    public function delete(Dial $dial): JsonResponse
+    public function delete($dial): JsonResponse
     {
         $dial = Dial::whereId($dial)->firstOrFail();
         $dial->delete();

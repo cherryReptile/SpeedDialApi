@@ -39,7 +39,7 @@ class CategoryController extends Controller
         return CategoryResource::make($category);
     }
 
-    public function delete(Request $request, $category): JsonResponse
+    public function delete($category): JsonResponse
     {
         $category = Category::whereId($category)->firstOrFail();
         $category->delete();
