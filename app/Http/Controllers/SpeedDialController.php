@@ -4,12 +4,15 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\CreateDialRequest;
 use App\Http\Requests\UpdateDialRequest;
+use App\Http\Resources\CategoryResource;
 use App\Http\Resources\DialResource;
 use App\Models\Category;
 use App\Models\Dial;
 use DiDom\Document;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use phpDocumentor\Reflection\Types\Collection;
+use Psy\Util\Json;
 use Response;
 
 class SpeedDialController extends Controller
@@ -52,5 +55,14 @@ class SpeedDialController extends Controller
         $dial->delete();
 
         return Response::json([], 204);
+    }
+
+    public function SpeedDials(Request $request): JsonResponse
+    {
+        $user = $request->user()->id;
+        $categories = Category::whereUserId($user);
+        $speedDials = CategoryResource::collection($categories->with('dial')->get());
+
+        return Response::json($speedDials);
     }
 }
