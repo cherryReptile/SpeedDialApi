@@ -45,7 +45,13 @@ class SpeedDialController extends Controller
     public function update($dial, UpdateDialRequest $request): DialResource
     {
         $dial = Dial::whereId($dial)->firstOrFail();
-        $dial->update($request->all());
+        $document = new Document($request->post('url'), true);
+        $title = $document->first('title')->text();
+        $description = (string)$document->first('meta[name=description]')->getAttribute('content');
+        $dial->update([
+            'title' => $title,
+            'description' => $document
+        ]);
 
         return DialResource::make($dial);
     }
