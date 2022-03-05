@@ -16,6 +16,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
     Route::prefix('category')->controller(CategoryController::class)->group(function () {
         Route::post('/', 'create')->name('create.category');
+        Route::get('/', 'all')->name('get.all.category');
         Route::get('/{category}', 'show')->name('get.category');
         Route::patch('/{category}', 'update')->name('update.category');
         Route::delete('/{category}', 'delete')->name('delete.category');

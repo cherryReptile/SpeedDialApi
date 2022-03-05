@@ -46,4 +46,9 @@ class CategoryController extends Controller
 
         return Response::json([], 204);
     }
+
+    public function all()
+    {
+        return CategoryResource::collection(\Auth::user()->category);
+    }
 }

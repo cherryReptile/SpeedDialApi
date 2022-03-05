@@ -2,32 +2,13 @@
 
 namespace App\Models;
 
+use DiDom\Document;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
- * App\Models\Dial
- *
- * @property int $id
- * @property string $title
- * @property string $description
- * @property bool $active
- * @property int $category_id
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
- * @property-read \App\Models\Category $category
- * @method static \Illuminate\Database\Eloquent\Builder|Dial newModelQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|Dial newQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|Dial query()
- * @method static \Illuminate\Database\Eloquent\Builder|Dial whereActive($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Dial whereCategoryId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Dial whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Dial whereDescription($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Dial whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Dial whereTitle($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Dial whereUpdatedAt($value)
- * @mixin \Eloquent
+ * @mixin IdeHelperDial
  */
 class Dial extends Model
 {
@@ -49,6 +30,21 @@ class Dial extends Model
     public function category(): BelongsTo
     {
         return $this->belongsTo(Category::class, 'id');
+    }
+
+    /**
+     * @throws \DiDom\Exceptions\InvalidSelectorException
+     */
+    public function updateUrlInfo(string $url): bool
+    {
+        $document = new Document($url, true);
+        $title = $document->first('title')->text();
+        $description = (string)$document->first('meta[name=description]')->getAttribute('content');
+
+        $this->description = $description;
+        $this->title = $title;
+
+        return $this->save();
     }
 
 }

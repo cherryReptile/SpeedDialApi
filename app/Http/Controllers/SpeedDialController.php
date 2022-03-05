@@ -8,6 +8,7 @@ use App\Http\Resources\CategoryResource;
 use App\Http\Resources\DialResource;
 use App\Models\Category;
 use App\Models\Dial;
+use App\Models\User;
 use DiDom\Document;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -19,20 +20,26 @@ class SpeedDialController extends Controller
 {
     public function create($category, CreateDialRequest $request): JsonResponse
     {
-        $category = Category::whereId($category)->firstOrFail();
-        $document = new Document($request->post('url'), true);
-        $title = $document->first('title')->text();
-        $description = (string)$document->first('meta[name=description]')->getAttribute('content');
-        $category->dial()->create([
-            'title' => $title,
-            'description' => $description,
+        $category = \Auth::user()
+            ->category()
+            ->where('id', '=', $category)
+            ->first()
+        ;
+
+        if (!$category) {
+            abort(403);
+        }
+
+        /** @var Dial $dial */
+        $dial = $category->dial()->create([
+            'title' => '',
+            'description' => '',
             'active' => true
         ]);
-        $dial = Dial::latest()->firstOrFail();
 
-        return Response::json([], 201)->withHeaders([
-            'Location' => 'dial/' . $dial->id
-        ]);
+        $dial->updateUrlInfo($request->post('url'));
+
+        return Response::json([], 201);
     }
 
     public function show($dial): DialResource
@@ -42,34 +49,31 @@ class SpeedDialController extends Controller
         return DialResource::make($dial);
     }
 
+    /**
+     * @throws \DiDom\Exceptions\InvalidSelectorException
+     */
     public function update($dial, UpdateDialRequest $request): DialResource
     {
-        $dial = Dial::whereId($dial)->firstOrFail();
-        $document = new Document($request->post('url'), true);
-        $title = $document->first('title')->text();
-        $description = (string)$document->first('meta[name=description]')->getAttribute('content');
-        $dial->update([
-            'title' => $title,
-            'description' => $document
-        ]);
+        /** @var Dial $dial */
+        $dial = \Auth::user()->dialThroughUser()->where('id', '=', $dial)
+            ->firstOrFail();
+
+        $dial->updateUrlInfo($request->post('url'));
 
         return DialResource::make($dial);
     }
 
     public function delete($dial): JsonResponse
     {
-        $dial = Dial::whereId($dial)->firstOrFail();
-        $dial->delete();
+        $dial = \Auth::user()->dialThroughUser()->where('id', '=', $dial)
+            ->delete();
+        //TODO: Проверка на то был ли удален действительно или нет
 
         return Response::json([], 204);
     }
 
-    public function SpeedDials(Request $request): JsonResponse
+    public function SpeedDials(Request $request)
     {
-        $user = $request->user()->id;
-        $categories = Category::whereUserId($user);
-        $speedDials = CategoryResource::collection($categories->with('dial')->get());
-
-        return Response::json($speedDials);
+        return CategoryResource::collection($request->user()->dialThroughUser);
     }
 }
