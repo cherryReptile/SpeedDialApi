@@ -16,24 +16,21 @@ class CategoryController extends Controller
     public function create(CreateCategoryRequest $request): JsonResponse
     {
         $user = \Auth::user();
-        $user->category()->create($request->all());
-        $category = Category::latest()->firstOrFail();
+        $category = $user->category()->create($request->all());
 
-        return Response::json([], 201)->withHeaders([
-            'Location' => 'category/' . $category->id
-        ]);
+        return Response::json([], $category instanceof Category ? 201 : 500);
     }
 
-    public function show($category): CategoryResource
+    public function show($category)
     {
-        $category = Category::whereId($category)->firstOrFail();
+        $category = \Auth::user()->category()->whereId($category)->firstOrFail();
 
         return CategoryResource::make($category);
     }
 
     public function update(UpdateCategoryRequest $request, $category): CategoryResource
     {
-        $category = Category::whereId($category)->firstOrFail();
+        $category = \Auth::user()->category()->whereId($category)->firstOrFail();
         $category->update($request->all());
 
         return CategoryResource::make($category);
@@ -41,8 +38,11 @@ class CategoryController extends Controller
 
     public function delete($category): JsonResponse
     {
-        $category = Category::whereId($category)->firstOrFail();
-        $category->delete();
+        $rows = \Auth::user()->category()->whereId($category)->delete();
+
+        if ($rows === 0) {
+            return Response::json([], 404);
+        }
 
         return Response::json([], 204);
     }

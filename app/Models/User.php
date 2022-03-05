@@ -63,6 +63,6 @@ class User extends Authenticatable
 
     public function dialThroughUser(): HasManyThrough
     {
-        return $this->hasManyThrough(Dial::class, Category::class);
+        return $this->hasManyThrough(Dial::class, Category::class, 'user_id', 'category_id', 'id', 'id');
     }
 }

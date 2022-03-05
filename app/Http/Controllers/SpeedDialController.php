@@ -15,23 +15,27 @@ use Illuminate\Http\Request;
 use phpDocumentor\Reflection\Types\Collection;
 use Psy\Util\Json;
 use Response;
+use function PHPUnit\Framework\isNull;
 
 class SpeedDialController extends Controller
 {
+    /**
+     * @throws \DiDom\Exceptions\InvalidSelectorException
+     */
     public function create($category, CreateDialRequest $request): JsonResponse
     {
         $category = \Auth::user()
             ->category()
             ->where('id', '=', $category)
-            ->first()
-        ;
+            ->first();
 
         if (!$category) {
-            abort(403);
+            abort(404);
         }
 
         /** @var Dial $dial */
         $dial = $category->dial()->create([
+            'url' => $request->post('url'),
             'title' => '',
             'description' => '',
             'active' => true
@@ -44,9 +48,14 @@ class SpeedDialController extends Controller
 
     public function show($dial): DialResource
     {
-        $dial = Dial::whereId($dial)->firstOrFail();
+        $dial = \Auth::user()->dialThroughUser()->where('dials.id', '=', $dial)->firstOrFail();
 
         return DialResource::make($dial);
+    }
+
+    public function all()
+    {
+        return DialResource::collection(\Auth::user()->dialThroughUser);
     }
 
     /**
@@ -55,7 +64,9 @@ class SpeedDialController extends Controller
     public function update($dial, UpdateDialRequest $request): DialResource
     {
         /** @var Dial $dial */
-        $dial = \Auth::user()->dialThroughUser()->where('id', '=', $dial)
+        $dial = \Auth::user()
+            ->dialThroughUser()
+            ->where('dials.id', '=', $dial)
             ->firstOrFail();
 
         $dial->updateUrlInfo($request->post('url'));
@@ -65,15 +76,13 @@ class SpeedDialController extends Controller
 
     public function delete($dial): JsonResponse
     {
-        $dial = \Auth::user()->dialThroughUser()->where('id', '=', $dial)
+        $rows = \Auth::user()->dialThroughUser()->where('dials.id', '=', $dial)
             ->delete();
-        //TODO: Проверка на то был ли удален действительно или нет
+
+        if ($rows === 0) {
+            return Response::json([], 404);
+        }
 
         return Response::json([], 204);
-    }
-
-    public function SpeedDials(Request $request)
-    {
-        return CategoryResource::collection($request->user()->dialThroughUser);
     }
 }
