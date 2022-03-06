@@ -22,11 +22,11 @@ class SpeedDialController extends Controller
     /**
      * @throws \DiDom\Exceptions\InvalidSelectorException
      */
-    public function create($category, CreateDialRequest $request): JsonResponse
+    public function create($id, CreateDialRequest $request): JsonResponse
     {
         $category = \Auth::user()
             ->category()
-            ->where('id', '=', $category)
+            ->where('id', '=', $id)
             ->first();
 
         if (!$category) {
@@ -46,9 +46,9 @@ class SpeedDialController extends Controller
         return Response::json([], 201);
     }
 
-    public function show($dial): DialResource
+    public function show($id): DialResource
     {
-        $dial = \Auth::user()->dialThroughUser()->where('dials.id', '=', $dial)->firstOrFail();
+        $dial = \Auth::user()->dialThroughUser()->where('dials.id', '=', $id)->firstOrFail();
 
         return DialResource::make($dial);
     }
@@ -61,22 +61,28 @@ class SpeedDialController extends Controller
     /**
      * @throws \DiDom\Exceptions\InvalidSelectorException
      */
-    public function update($dial, UpdateDialRequest $request): DialResource
+    public function update($id, UpdateDialRequest $request): DialResource
     {
         /** @var Dial $dial */
         $dial = \Auth::user()
             ->dialThroughUser()
-            ->where('dials.id', '=', $dial)
+            ->where('dials.id', '=', $id)
             ->firstOrFail();
+
+        if ($request->post('title') || $request->post('description')) {
+            $dial->updateTitleOrDescription($request->post('title', ''), $request->post('description', ''));
+
+            return DialResource::make($dial);
+        }
 
         $dial->updateUrlInfo($request->post('url'));
 
         return DialResource::make($dial);
     }
 
-    public function delete($dial): JsonResponse
+    public function delete($id): JsonResponse
     {
-        $rows = \Auth::user()->dialThroughUser()->where('dials.id', '=', $dial)
+        $rows = \Auth::user()->dialThroughUser()->where('dials.id', '=', $id)
             ->delete();
 
         if ($rows === 0) {

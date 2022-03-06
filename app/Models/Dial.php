@@ -46,7 +46,7 @@ class Dial extends Model
 
         try {
             $document = new Document($url, true);
-            $title = (string) $document?->first('title')?->text();
+            $title = (string)$document?->first('title')?->text();
             $description = (string)$document?->first('meta[name=description]')?->getAttribute('content');
         } catch (\Exception $exception) {
         }
@@ -55,6 +55,14 @@ class Dial extends Model
         $this->url = $url;
         $this->description = $description;
         $this->title = $title;
+
+        return $this->save();
+    }
+
+    public function updateTitleOrDescription(string $title, string $description): bool
+    {
+        $this->title = $title;
+        $this->description = $description;
 
         return $this->save();
     }
