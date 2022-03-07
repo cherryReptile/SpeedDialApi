@@ -21,7 +21,7 @@ class AuthController extends Controller
         return Response::json([
             'user' => UserResource::make($user),
             'token' => $token
-        ]);
+        ], 201);
     }
 
     public function login(LoginRequest $request): JsonResponse
