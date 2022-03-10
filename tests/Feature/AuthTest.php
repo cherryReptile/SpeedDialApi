@@ -27,6 +27,18 @@ class AuthTest extends TestCase
             ]);
     }
 
+    public function test_logout()
+    {
+        $user = User::latest()->firstOrFail();
+        Sanctum::actingAs($user);
+        $response = $this->postJson('api/logout');
+        $response
+            ->assertStatus(200)
+            ->assertJson([
+                'message' => 'logged out'
+            ]);
+    }
+
     public function test_login()
     {
         $user = User::latest()->firstOrFail();
@@ -39,18 +51,6 @@ class AuthTest extends TestCase
             ->assertJson([
                 'user' => true,
                 'token' => true
-            ]);
-    }
-
-    public function test_logout()
-    {
-        $user = User::latest()->firstOrFail();
-        Sanctum::actingAs($user);
-        $response = $this->postJson('api/logout');
-        $response
-            ->assertStatus(200)
-            ->assertJson([
-                'message' => 'logged out'
             ]);
     }
 
