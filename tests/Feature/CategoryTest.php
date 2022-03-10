@@ -19,7 +19,7 @@ class CategoryTest extends TestCase
      *
      * @return void
      */
-    public function test_create()
+    public function test_category_create()
     {
         Sanctum::actingAs(User::latest()->firstOrFail());
         $data = Category::factory()->definition();
@@ -29,7 +29,7 @@ class CategoryTest extends TestCase
             ->assertJson([]);
     }
 
-    public function test_show()
+    public function test_category_show()
     {
         Sanctum::actingAs(User::latest()->firstOrFail());
         $category = Category::latest()->firstOrFail();
@@ -43,7 +43,7 @@ class CategoryTest extends TestCase
                 ->etc());
     }
 
-    public function test_all()
+    public function test_category_all()
     {
         $user = User::latest()->firstOrFail();
         Sanctum::actingAs($user);
@@ -63,7 +63,7 @@ class CategoryTest extends TestCase
         }
     }
 
-    public function test_update()
+    public function test_category_update()
     {
         $user = User::latest()->firstOrFail();
         Sanctum::actingAs($user);
@@ -72,21 +72,13 @@ class CategoryTest extends TestCase
         $categoryAfterUpdate = Category::latest()->firstOrFail();
         $response
             ->assertStatus(200)
-            ->assertJson(fn(AssertableJson $json) => $json
-                ->where('id', $categoryAfterUpdate->id)
-                ->where('name', $categoryAfterUpdate->name)
-                ->where('user_id', $categoryAfterUpdate->user_id)
-                ->etc()
-            );
-    }
-
-    public function test_delete()
-    {
-        $user = User::latest()->firstOrFail();
-        Sanctum::actingAs($user);
-        $category = Category::latest()->firstOrFail();
-        $response = $this->deleteJson('api/category/' . $category->id);
-        $response
-            ->assertStatus(204);
+            ->assertExactJson([
+                'id' => $categoryAfterUpdate->id,
+                'name' => $categoryAfterUpdate->name,
+                'user_id' => $categoryAfterUpdate->user_id,
+                'created_at' => $categoryAfterUpdate->created_at,
+                'updated_at' => $categoryAfterUpdate->updated_at,
+                'dial' => []
+            ]);
     }
 }
