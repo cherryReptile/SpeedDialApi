@@ -29,6 +29,11 @@ class DialTest extends TestCase
             ->assertJson([]);
     }
 
+    public function test_validation_of_create()
+    {
+
+    }
+
     public function test_dial_show()
     {
         $user = User::latest()->firstOrFail();
@@ -87,6 +92,11 @@ class DialTest extends TestCase
                 'created_at' => $dialAfterUpdate->created_at,
                 'updated_at' => $dialAfterUpdate->updated_at
             ]);
+    }
+
+    public function test_validation_of_update()
+    {
+
     }
 
     public function test_dial_delete()

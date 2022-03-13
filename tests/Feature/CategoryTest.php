@@ -10,6 +10,7 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Testing\Fluent\AssertableJson;
 use Laravel\Sanctum\Sanctum;
+use Mockery\Exception;
 use Tests\TestCase;
 
 class CategoryTest extends TestCase
@@ -27,6 +28,14 @@ class CategoryTest extends TestCase
         $response
             ->assertStatus(201)
             ->assertJson([]);
+    }
+
+    /**
+     * @throws \ErrorException
+     */
+    public function test_validation_of_create()
+    {
+
     }
 
     public function test_category_show()
@@ -72,13 +81,16 @@ class CategoryTest extends TestCase
         $categoryAfterUpdate = Category::latest()->firstOrFail();
         $response
             ->assertStatus(200)
-            ->assertExactJson([
-                'id' => $categoryAfterUpdate->id,
-                'name' => $categoryAfterUpdate->name,
-                'user_id' => $categoryAfterUpdate->user_id,
-                'created_at' => $categoryAfterUpdate->created_at,
-                'updated_at' => $categoryAfterUpdate->updated_at,
-                'dial' => []
-            ]);
+            ->assertJson(fn(AssertableJson $json) => $json
+                ->where('id', $categoryAfterUpdate->id)
+                ->where('name', $categoryAfterUpdate->name)
+                ->where('user_id', $categoryAfterUpdate->user_id)
+                ->etc()
+            );
+    }
+
+    public function test_validation_of_update()
+    {
+
     }
 }
