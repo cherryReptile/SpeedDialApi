@@ -31,7 +31,11 @@ class DialTest extends TestCase
 
     public function test_validation_of_create()
     {
-
+        Sanctum::actingAs(User::latest()->firstOrFail());
+        $response = $this->postJson('api/category/' . Category::latest()->firstOrFail()->id . '/dial');
+        $response
+            ->assertStatus(422)
+            ->assertInvalid(['url']);
     }
 
     public function test_dial_show()
@@ -96,7 +100,11 @@ class DialTest extends TestCase
 
     public function test_validation_of_update()
     {
-
+        Sanctum::actingAs(User::latest()->firstOrFail());
+        $response = $this->patchJson('api/dial/' . Dial::latest()->firstOrFail()->id);
+        $response
+            ->assertStatus(422)
+            ->assertInvalid(['url']);
     }
 
     public function test_dial_delete()

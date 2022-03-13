@@ -35,7 +35,11 @@ class CategoryTest extends TestCase
      */
     public function test_validation_of_create()
     {
-
+        Sanctum::actingAs(User::latest()->firstOrFail());
+        $response = $this->postJson('api/category');
+        $response
+            ->assertStatus(422)
+            ->assertInvalid(['name']);
     }
 
     public function test_category_show()
@@ -91,6 +95,10 @@ class CategoryTest extends TestCase
 
     public function test_validation_of_update()
     {
-
+        Sanctum::actingAs(User::latest()->firstOrFail());
+        $response = $this->patchJson('api/category/' . Category::latest()->firstOrFail()->id);
+        $response
+            ->assertStatus(422)
+            ->assertInvalid(['name']);
     }
 }
