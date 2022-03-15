@@ -19,7 +19,8 @@ class DialFactory extends Factory
         return [
             'url' => 'https://youtube.com',
             'title' => $this->faker->title,
-            'description' => $this->faker->text
+            'description' => $this->faker->text,
+            'active' => true
         ];
     }
 }

@@ -59,7 +59,7 @@ class Dial extends Model
         return $this->save();
     }
 
-    public function updateTitleOrDescription(string $title, string $description): bool
+    public function updateTitleOrDescription(string $title = '', string $description = ''): bool
     {
         $this->title = $title;
         $this->description = $description;
