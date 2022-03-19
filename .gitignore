@@ -1,6 +1,7 @@
 /.idea
 /docker/db/
 /docker/redis/
+postgres-data
 
 /node_modules
 /public/hot
