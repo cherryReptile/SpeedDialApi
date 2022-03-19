@@ -8,60 +8,94 @@ use App\Models\User;
 use Database\Factories\UserFactory;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
+use Illuminate\Support\Facades\Facade;
 use Illuminate\Testing\Fluent\AssertableJson;
-use Laravel\Sanctum\Sanctum;
 use Mockery\Exception;
+use PHPUnit\Runner\Filter\Factory;
 use Tests\TestCase;
 
+/**
+ * TODO: Нет удаления категории
+ */
 class CategoryTest extends TestCase
 {
+    use RefreshDatabase;
+    use WithFaker;
+
     /**
      * A basic feature test example.
-     *
-     * @return void
+     * TODO: Не проверяется наличие созданной категории в бд
+     * @return string
      */
-    public function test_category_create()
+
+    /**
+     * @throws \Throwable
+     */
+    public function test_category_create(): string
     {
-        Sanctum::actingAs(User::latest()->firstOrFail());
-        $data = Category::factory()->definition();
-        $response = $this->postJson('api/category', $data);
+        $userTests = new AuthTest();
+        $userTests->setUp();
+
+        $token = $userTests->test_register();
+
+        $data = [
+            'name' => $this->faker->title
+        ];
+        $response = $this->postJson('api/category', $data, [
+            'Authorization' => "Bearer $token"
+        ]);
         $response
             ->assertStatus(201)
             ->assertJson([]);
+        $this->assertEquals(1, Category::count());
+
+        return $token;
     }
 
     /**
-     * @throws \ErrorException
+     * @throws \Throwable
      */
     public function test_validation_of_create()
     {
-        Sanctum::actingAs(User::latest()->firstOrFail());
-        $response = $this->postJson('api/category');
+        $response = $this->postJson('api/category', [
+            'Authorization' => "Bearer {$this->test_category_create()}"
+        ]);
         $response
             ->assertStatus(422)
             ->assertInvalid(['name']);
     }
 
+    /**
+     * @throws \Throwable
+     */
     public function test_category_show()
     {
-        Sanctum::actingAs(User::latest()->firstOrFail());
+        $token = $this->test_category_create();
         $category = Category::latest()->firstOrFail();
-        $response = $this->getJson('api/category/' . $category->id);
+        $response = $this->getJson('api/category/' . $category->id, [
+            'Authorization' => "Bearer $token"
+        ]);
         $response
             ->assertStatus(200)
-            ->assertJson(fn(AssertableJson $json) => $json
-                ->where('id', $category->id)
-                ->where('name', $category->name)
-                ->where('user_id', $category->user_id)
-                ->etc());
+            ->assertJson(
+                fn(AssertableJson $json) => $json
+                    ->where('id', $category->id)
+                    ->where('name', $category->name)
+                    ->where('user_id', $category->user_id)
+                    ->etc()
+            );
     }
 
+    /**
+     * @throws \Throwable
+     */
     public function test_category_all()
     {
-        $user = User::latest()->firstOrFail();
-        Sanctum::actingAs($user);
-        $categories = Category::whereUserId($user->id)->get();
-        $response = $this->getJson('api/category/');
+        $token = $this->test_category_create();
+        $categories = Category::whereUserId(User::latest()->firstOrFail()->id)->get();
+        $response = $this->getJson('api/category/', [
+            'Authorization' => "Bearer $token"
+        ]);
         $response->assertStatus(200);
         foreach ($categories as $category) {
             $response->assertJson(fn(AssertableJson $json) => $json
@@ -76,12 +110,18 @@ class CategoryTest extends TestCase
         }
     }
 
+    /**
+     * @throws \Throwable
+     */
     public function test_category_update()
     {
-        $user = User::latest()->firstOrFail();
-        Sanctum::actingAs($user);
+        $token = $this->test_category_create();
         $category = Category::latest()->firstOrFail();
-        $response = $this->patchJson('api/category/' . $category->id, Category::factory()->definition());
+        $response = $this->patchJson('api/category/' . $category->id, [
+            'name' => $this->faker->title
+        ], [
+            'Authorization' => "Bearer $token"
+        ]);
         $categoryAfterUpdate = Category::latest()->firstOrFail();
         $response
             ->assertStatus(200)
@@ -93,12 +133,32 @@ class CategoryTest extends TestCase
             );
     }
 
+    /**
+     * @throws \Throwable
+     */
     public function test_validation_of_update()
     {
-        Sanctum::actingAs(User::latest()->firstOrFail());
-        $response = $this->patchJson('api/category/' . Category::latest()->firstOrFail()->id);
+        $token = $this->test_category_create();
+        $response = $this->patchJson('api/category/' . Category::latest()->firstOrFail()->id, [
+            'Authorization' => "Bearer $token"
+        ]);
         $response
             ->assertStatus(422)
             ->assertInvalid(['name']);
+    }
+
+    /**
+     * @throws \Throwable
+     */
+    public function test_category_delete()
+    {
+        $token = $this->test_category_create();
+        $category = Category::latest()->firstOrFail();
+        $response = $this->deleteJson('api/category/' . $category->id, [
+            'Authorization' => "Bearer $token"
+        ]);
+        $response
+            ->assertStatus(204);
+        $this->assertEquals(0, Category::count());
     }
 }

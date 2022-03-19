@@ -14,6 +14,7 @@ Route::prefix('auth')->controller(AuthController::class)->group(function () {
 //Private routes
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+    Route::get('/user', [AuthController::class, 'user'])->name('get.user');
     Route::prefix('category')->group(function () {
         Route::post('/', [CategoryController::class, 'create'])->name('create.category');
         Route::get('/{id}', [CategoryController::class, 'show'])->name('get.category');

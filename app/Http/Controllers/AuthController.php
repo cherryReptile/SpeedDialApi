@@ -18,10 +18,19 @@ class AuthController extends Controller
     {
         $user = User::create($request->all());
         $token = $user->createToken('api')->plainTextToken;
+
         return Response::json([
             'user' => UserResource::make($user),
             'token' => $token
         ], 201);
+    }
+
+    public function user(Request $request)
+    {
+
+        return response()->json([
+            'user' => UserResource::make($request->user())
+        ]);
     }
 
     public function login(LoginRequest $request): JsonResponse

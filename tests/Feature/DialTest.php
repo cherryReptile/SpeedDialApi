@@ -13,37 +13,71 @@ use Tests\TestCase;
 
 class DialTest extends TestCase
 {
+    use RefreshDatabase;
+    use WithFaker;
+
+    protected $token;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        User::factory()->has(
+            Category::factory(10)
+        )->create();
+
+        $this->token = User::latest()->firstOrFail()->createToken('test')->plainTextToken;
+    }
+
     /**
      * A basic feature test example.
-     *
+     * TODO: Не проверяешь физическое наличие в бд
      * @return void
+     * @throws \Throwable
      */
     public function test_dial_create()
     {
-        $user = User::latest()->firstOrFail();
-        Sanctum::actingAs($user);
+        $token = $this->token;
+
+        $data = [
+            'url' => 'https://youtube.com'
+        ];
         $category = Category::latest()->firstOrFail();
-        $response = $this->postJson('api/category/' . $category->id . '/dial', Dial::factory()->definition());
+        $response = $this->postJson('api/category/' . $category->id . '/dial', $data, [
+            'Authorization' => "Bearer $token"
+        ]);
         $response
             ->assertStatus(201)
             ->assertJson([]);
+        $this->assertEquals(1, Dial::count());
     }
 
+    /**
+     * @throws \Throwable
+     */
     public function test_validation_of_create()
     {
-        Sanctum::actingAs(User::latest()->firstOrFail());
-        $response = $this->postJson('api/category/' . Category::latest()->firstOrFail()->id . '/dial');
+        $token = $this->token;
+        $response = $this->postJson('api/category/' . Category::latest()->firstOrFail()->id . '/dial', [], [
+            'Authorization' => "Bearer $token"
+        ]);
         $response
             ->assertStatus(422)
             ->assertInvalid(['url']);
     }
 
+    /**
+     * @throws \Throwable
+     */
     public function test_dial_show()
     {
-        $user = User::latest()->firstOrFail();
-        Sanctum::actingAs($user);
+        $token = $this->token;
+        $this->test_dial_create();
+
         $dial = Dial::latest()->firstOrFail();
-        $response = $this->getJson('api/dial/' . $dial->id);
+        $response = $this->getJson('api/dial/' . $dial->id, [
+            'Authorization' => "Bearer $token"
+        ]);
         $response
             ->assertStatus(200)
             ->assertExactJson([
@@ -52,17 +86,24 @@ class DialTest extends TestCase
                 'description' => $dial->description,
                 'category_id' => $dial->category_id,
                 'active' => $dial->active,
-                'created_at' => $dial->created_at,
-                'updated_at' => $dial->updated_at
+                'created_at' => $dial->created_at->format('Y-m-d H:i:s'),
+                'updated_at' => $dial->updated_at->format('Y-m-d H:i:s')
             ]);
     }
 
+    /**
+     * @throws \Throwable
+     */
     public function test_dial_all()
     {
+        $token = $this->token;
+        $this->test_dial_create();
+
         $user = User::latest()->firstOrFail();
-        Sanctum::actingAs($user);
         $dials = $user->dialThroughUser()->get();
-        $response = $this->getJson('api/dial')->assertStatus(200);
+        $response = $this->getJson('api/dial', [
+            'Authorization' => "Bearer $token"
+        ])->assertStatus(200);
         foreach ($dials as $dial) {
             $response
                 ->assertJson(fn(AssertableJson $json) => $json
@@ -78,12 +119,21 @@ class DialTest extends TestCase
         }
     }
 
+    /**
+     * @throws \Throwable
+     */
     public function test_dial_update()
     {
-        $user = User::latest()->firstOrFail();
-        Sanctum::actingAs($user);
+        $token = $this->token;
+        $this->test_dial_create();
+
         $dial = Dial::latest()->firstOrFail();
-        $response = $this->patchJson('api/dial/' . $dial->id, Dial::factory()->definition());
+        $data = [
+          'url' => $this->faker->url
+        ];
+        $response = $this->patchJson('api/dial/' . $dial->id, $data, [
+            'Authorization' => "Bearer $token"
+        ]);
         $dialAfterUpdate = Dial::latest()->firstOrFail();
         $response
             ->assertStatus(200)
@@ -93,37 +143,44 @@ class DialTest extends TestCase
                 'description' => $dialAfterUpdate->description,
                 'category_id' => $dialAfterUpdate->category_id,
                 'active' => $dialAfterUpdate->active,
-                'created_at' => $dialAfterUpdate->created_at,
-                'updated_at' => $dialAfterUpdate->updated_at
+                'created_at' => $dialAfterUpdate->created_at->format('Y-m-d H:i:s'),
+                'updated_at' => $dialAfterUpdate->updated_at->format('Y-m-d H:i:s')
             ]);
     }
 
+    /**
+     * @throws \Throwable
+     */
     public function test_validation_of_update()
     {
-        Sanctum::actingAs(User::latest()->firstOrFail());
-        $response = $this->patchJson('api/dial/' . Dial::latest()->firstOrFail()->id);
+        $token = $this->token;
+        $this->test_dial_create();
+
+        $response = $this->patchJson('api/dial/' . Dial::latest()->firstOrFail()->id, [
+            'Authorization' => "Bearer $token"
+        ]);
         $response
             ->assertStatus(422)
             ->assertInvalid(['url']);
     }
 
+    /**
+     * TODO: НЕ проверяешь удалилось ли в бд
+     * @return void
+     * @throws \Throwable
+     */
     public function test_dial_delete()
     {
-        $user = User::latest()->firstOrFail();
-        Sanctum::actingAs($user);
+        $token = $this->token;
+        $this->test_dial_create();
+
         $dial = Dial::latest()->firstOrFail();
-        $response = $this->deleteJson('api/dial/' . $dial->id);
+        $response = $this->deleteJson('api/dial/' . $dial->id, [
+            'Authorization' => "Bearer $token"
+        ]);
         $response
             ->assertStatus(204);
+        $this->assertEquals(0, Dial::count());
     }
 
-    public function test_category_delete()
-    {
-        $user = User::latest()->firstOrFail();
-        Sanctum::actingAs($user);
-        $category = Category::latest()->firstOrFail();
-        $response = $this->deleteJson('api/category/' . $category->id);
-        $response
-            ->assertStatus(204);
-    }
 }
