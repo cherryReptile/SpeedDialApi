@@ -18,6 +18,7 @@ class DialResource extends JsonResource
         /** @var Dial $this */
         return [
             'id' => $this->id,
+            'url' => $this->url,
             'title' => $this->title,
             'description' => $this->description,
             'active' => $this->active,

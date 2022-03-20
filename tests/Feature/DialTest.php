@@ -16,7 +16,7 @@ class DialTest extends TestCase
     use RefreshDatabase;
     use WithFaker;
 
-    protected $token;
+    protected string $token;
 
     protected function setUp(): void
     {
@@ -82,6 +82,7 @@ class DialTest extends TestCase
             ->assertStatus(200)
             ->assertExactJson([
                 'id' => $dial->id,
+                'url' => $dial->url,
                 'title' => $dial->title,
                 'description' => $dial->description,
                 'category_id' => $dial->category_id,
@@ -110,6 +111,7 @@ class DialTest extends TestCase
                     ->has(count($dials))
                     ->first(fn($json) => $json
                         ->where('id', $dial->id)
+                        ->where('url', $dial->url)
                         ->where('title', $dial->title)
                         ->where('description', $dial->description)
                         ->where('category_id', $dial->category_id)
@@ -139,6 +141,7 @@ class DialTest extends TestCase
             ->assertStatus(200)
             ->assertExactJson([
                 'id' => $dialAfterUpdate->id,
+                'url' => $dialAfterUpdate->url,
                 'title' => $dialAfterUpdate->title,
                 'description' => $dialAfterUpdate->description,
                 'category_id' => $dialAfterUpdate->category_id,
