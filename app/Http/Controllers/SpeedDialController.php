@@ -36,12 +36,13 @@ class SpeedDialController extends Controller
         /** @var Dial $dial */
         $dial = $category->dial()->create([
             'url' => $request->post('url'),
+            'img_source' => '',
             'title' => '',
             'description' => '',
             'active' => true
         ]);
 
-        $dial->updateUrlInfo($request->post('url'));
+        $dial->updateUrlInfo($request->post('url'), \Auth::user()->name);
 
         return Response::json([], 201);
     }
@@ -75,7 +76,7 @@ class SpeedDialController extends Controller
             return DialResource::make($dial);
         }
 
-        $dial->updateUrlInfo($request->post('url'));
+        $dial->updateUrlInfo($request->post('url'), \Auth::user()->name);
 
         return DialResource::make($dial);
     }

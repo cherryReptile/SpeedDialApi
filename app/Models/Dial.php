@@ -14,6 +14,7 @@ class Dial extends Model
 
     protected $fillable = [
         'url',
+        'img_source',
         'title',
         'description',
         'active'
@@ -40,16 +41,18 @@ class Dial extends Model
     {
         $title = '';
         $description = '';
+        $img_source = '';
 
         try {
             $document = new Document($url, true);
             $title = (string)$document?->first('title')?->text();
             $description = (string)$document?->first('meta[name=description]')?->getAttribute('content');
+            $img_source = shell_exec("node /var/www/resources/js/node/index.js $url {$this->id}");
         } catch (\Exception $exception) {
         }
 
-
         $this->url = $url;
+        $this->img_source = $img_source;
         $this->description = $description;
         $this->title = $title;
 
