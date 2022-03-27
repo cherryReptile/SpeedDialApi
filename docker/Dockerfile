@@ -31,6 +31,7 @@ RUN bash ./nodesource_setup.sh
 RUN rm ./nodesource_setup.sh
 RUN apt install nodejs -y
 RUN npm install -g nodemon
+RUN npm i puppeteer
 
 # Очистка кэша apt
 RUN apt-get clean && rm -rf /var/lib/apt/lists/*
