@@ -16,6 +16,7 @@ return new class extends Migration
         Schema::create('dials', function (Blueprint $table) {
             $table->id();
             $table->text('url');
+            $table->string('img_source');
             $table->string('title');
             $table->text('description');
             $table->boolean('active');
