@@ -23,7 +23,16 @@ RUN apt-get update && apt-get install -y \
     unzip \
     zsh \
     libpq-dev \
+    wget \
+    gnupg2 \
     git
+
+#Google-chrome repo
+RUN wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add - \
+&& echo "deb http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google.list
+
+RUN apt-get update
+RUN apt-get -y install net-tools lsof google-chrome-stable
 
 #nodejs
 RUN curl -sL https://deb.nodesource.com/setup_14.x -o nodesource_setup.sh
@@ -31,7 +40,8 @@ RUN bash ./nodesource_setup.sh
 RUN rm ./nodesource_setup.sh
 RUN apt install nodejs -y
 RUN npm install -g nodemon
-RUN npm i puppeteer
+RUN npm install -g puppeteer-core
+RUN npm install -g npm
 
 # Очистка кэша apt
 RUN apt-get clean && rm -rf /var/lib/apt/lists/*
