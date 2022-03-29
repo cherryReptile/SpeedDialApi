@@ -26,8 +26,8 @@ class ProjectTest extends TestCase
      */
     public function test_update_url_info()
     {
-        $this->assertTrue($this->base_eloquent()->updateUrlInfo('https://youtube.com'));
-        $this->assertTrue($this->base_eloquent()->updateUrlInfo('https://losdvksdvmsk.ru')); // Invalid HTML
+        $this->assertTrue($this->base_eloquent()->updateUrlInfo('https://youtube.com', 1));
+        $this->assertTrue($this->base_eloquent()->updateUrlInfo('https://losdvksdvmsk.ru', 1)); // Invalid HTML
     }
 
     public function test_update_title_or_description()
