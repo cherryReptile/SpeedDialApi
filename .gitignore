@@ -13,3 +13,6 @@ postgres-data
 .phpunit.result.cache
 npm-debug.log
 yarn-error.log
+echo
+linux_signing_key.pub
+linux_signing_key.pub.1
