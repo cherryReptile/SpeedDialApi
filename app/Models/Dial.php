@@ -47,7 +47,7 @@ class Dial extends Model
             $document = new Document($url, true);
             $title = (string)$document?->first('title')?->text();
             $description = (string)$document?->first('meta[name=description]')?->getAttribute('content');
-            $img_source = shell_exec("node /var/www/resources/js/node/index.js $url {$this->id}");
+            $img_source = shell_exec("cd /var/www/resources/js/node; node index.js $url {$this->id}");
         } catch (\Exception $exception) {
         }
 
