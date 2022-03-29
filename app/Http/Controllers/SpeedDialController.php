@@ -42,7 +42,7 @@ class SpeedDialController extends Controller
             'active' => true
         ]);
 
-        $dial->updateUrlInfo($request->post('url'), \Auth::user()->name);
+        $dial->updateUrlInfo($request->post('url'), 1);
 
         return Response::json([], 201);
     }
@@ -76,7 +76,7 @@ class SpeedDialController extends Controller
             return DialResource::make($dial);
         }
 
-        $dial->updateUrlInfo($request->post('url'), \Auth::user()->name);
+        $dial->updateUrlInfo($request->post('url'), 0);
 
         return DialResource::make($dial);
     }
