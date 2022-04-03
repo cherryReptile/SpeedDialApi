@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Jobs\InitNodeScriptJob;
 use DiDom\Document;
 use DiDom\Exceptions\InvalidSelectorException;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -48,7 +49,7 @@ class Dial extends Model
             $title = (string)$document?->first('title')?->text();
             $description = (string)$document?->first('meta[name=description]')?->getAttribute('content');
             if ($switch === 1) {
-                $img_source = shell_exec("cd /var/www/resources/js/node; node index.js $url {$this->id}");
+                dispatch(new InitNodeScriptJob($this->id, $url));
             }
         } catch (\Exception $exception) {
         }
