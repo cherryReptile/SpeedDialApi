@@ -21,6 +21,8 @@ class Dial extends Model
         'active'
     ];
 
+    public const RESOURCE_PATH = '/var/www/resources/js/node/img/';
+
     private string $url;
 
     public static function getRules()
@@ -50,6 +52,7 @@ class Dial extends Model
             $description = (string)$document?->first('meta[name=description]')?->getAttribute('content');
             if ($switch === 1) {
                 dispatch(new InitNodeScriptJob($this->id, $url));
+                $img_source = self::RESOURCE_PATH . "{$this->id}.png";
             }
         } catch (\Exception $exception) {
         }

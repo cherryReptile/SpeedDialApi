@@ -14,5 +14,3 @@ let imgPath = 'img/' + argsProcess[1].toString() + '.png';
 
     await browser.close();
 })();
-let absImgPath = __dirname + '/' + imgPath;
-console.log(absImgPath.toString());
