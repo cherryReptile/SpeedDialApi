@@ -8,8 +8,7 @@ endif
 init:
 	bash bin/init.sh
 build:
-	docker-compose up --build -d
-	@make status
+	make down && sudo chown -R ${USER}:${USER} postgres-data && docker-compose build && docker-compose up -d && make exec
 up:
 	docker-compose up -d
 	@make status
@@ -18,7 +17,7 @@ status:
 down:
 	docker-compose stop
 exec:
-	docker-compose exec app zsh
+	docker-compose exec app bash
 rm:
 	docker-compose rm
 dump:
