@@ -40,7 +40,7 @@ class Dial extends Model
     /**
      * @throws \DiDom\Exceptions\InvalidSelectorException
      */
-    public function updateUrlInfo(string $url, int $switch): bool
+    public function updateUrlInfo(string $url): bool
     {
         $title = '';
         $description = '';
@@ -50,10 +50,9 @@ class Dial extends Model
             $document = new Document($url, true);
             $title = (string)$document?->first('title')?->text();
             $description = (string)$document?->first('meta[name=description]')?->getAttribute('content');
-            if ($switch === 1) {
-                dispatch(new InitNodeScriptJob($this->id, $url));
-                $img_source = self::RESOURCE_PATH . "{$this->id}.png";
-            }
+            dispatch(new InitNodeScriptJob($this->id, $url));
+            $imagePath = self::RESOURCE_PATH . "{$this->id}.png";
+            file_exists($imagePath) ? $img_source = $imagePath : $img_source = null;
         } catch (\Exception $exception) {
         }
 
