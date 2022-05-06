@@ -34,6 +34,6 @@ class InitNodeScriptJob implements ShouldQueue
      */
     public function handle()
     {
-        exec("cd /var/www/resources/js/node; node index.js {$this->url} {$this->id}");
+        exec("node /var/www/resources/js/node/index.js $this->url $this->id");
     }
 }

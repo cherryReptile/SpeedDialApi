@@ -42,9 +42,9 @@ class SpeedDialController extends Controller
             'active' => true
         ]);
 
-        $dial->updateUrlInfo($request->post('url'), 1);
+        $dial->updateUrlInfo($request->post('url'));
 
-        return Response::json([], 201);
+        return Response::json(DialResource::make($dial), 201);
     }
 
     public function show($id): DialResource
@@ -76,7 +76,7 @@ class SpeedDialController extends Controller
             return DialResource::make($dial);
         }
 
-        $dial->updateUrlInfo($request->post('url'), 0);
+        $dial->updateUrlInfo($request->post('url'));
 
         return DialResource::make($dial);
     }
