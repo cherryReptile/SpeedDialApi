@@ -1,8 +1,8 @@
 const puppeteer = require('puppeteer-core');
 const argsProcess = process.argv.slice(2);
-const path = require('path');
 let imgPath = 'img/' + argsProcess[1].toString() + '.png';
 
+try{
 (async () => {
     const browser = await puppeteer.launch({
         executablePath: '/usr/bin/google-chrome-stable',
@@ -10,7 +10,10 @@ let imgPath = 'img/' + argsProcess[1].toString() + '.png';
     });
     const page = await browser.newPage();
     await page.goto(argsProcess[0].toString());
-    await page.screenshot({path: imgPath});
+    await page.screenshot({path: '/var/www/resources/js/node/' + imgPath});
 
     await browser.close();
-})();
+    await process.exit();
+})();} catch (err){
+    process.exit();
+}
