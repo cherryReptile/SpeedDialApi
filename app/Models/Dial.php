@@ -51,8 +51,7 @@ class Dial extends Model
             $title = (string)$document?->first('title')?->text();
             $description = (string)$document?->first('meta[name=description]')?->getAttribute('content');
             dispatch(new InitNodeScriptJob($this->id, $url));
-            $imagePath = self::RESOURCE_PATH . "{$this->id}.png";
-            file_exists($imagePath) ? $img_source = $imagePath : $img_source = null;
+            $img_source = self::RESOURCE_PATH . "$this->id.png";
         } catch (\Exception $exception) {
         }
 
