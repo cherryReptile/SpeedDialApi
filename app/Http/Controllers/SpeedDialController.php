@@ -70,6 +70,10 @@ class SpeedDialController extends Controller
             ->where('dials.id', '=', $id)
             ->firstOrFail();
 
+        if (file_exists($dial->img_source) != true) {
+            $dial->img_source = null;
+        }
+
         if ($request->post('title') || $request->post('description')) {
             $dial->updateTitleOrDescription($request->post('title', ''), $request->post('description', ''));
 
