@@ -90,6 +90,8 @@ class SpeedDialController extends Controller
             return Response::json([], 404);
         }
 
+        unlink(Dial::RESOURCE_PATH . "$id.png");
+
         return Response::json([], 204);
     }
 }
