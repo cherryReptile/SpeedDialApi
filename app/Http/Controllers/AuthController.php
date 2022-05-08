@@ -38,13 +38,19 @@ class AuthController extends Controller
         //check email
         $email = $request->post('email');
         $password = $request->post('password');
-        $user = User::whereEmail($email)->firstOrFail();
+        $user = User::whereEmail($email)->first();
 
-        //check password
-        if (!$user || !Hash::check($password, $user->password)) {
+        //check email
+        if (!$user){
             return Response::json([
-                'message' => 'user not found'
-            ]);
+                'message' => 'password or email is invalid'
+            ], 422);
+        }
+        //check password
+        if (!Hash::check($password, $user->password)) {
+            return Response::json([
+                'message' => 'password or email is invalid'
+            ], 422);
         }
         $token = $user->createToken('api')->plainTextToken;
 
