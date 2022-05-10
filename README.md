@@ -1,1 +1,1 @@
-API speed dial
+# [API speed dial](https://github.com/cherryReptile/SpeedDialFrontend)
