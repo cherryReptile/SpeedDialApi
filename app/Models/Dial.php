@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Jobs\InitNodeScriptJob;
+use App\Traits\HasImage;
 use DiDom\Document;
 use DiDom\Exceptions\InvalidSelectorException;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -11,7 +12,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Dial extends Model
 {
-    use HasFactory;
+    use HasFactory, HasImage;
 
     protected $fillable = [
         'url',
