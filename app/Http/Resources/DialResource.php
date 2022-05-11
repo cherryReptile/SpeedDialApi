@@ -19,7 +19,6 @@ class DialResource extends JsonResource
         return [
             'id' => $this->id,
             'url' => $this->url,
-            'img_source' => $this->img_source,
             'title' => $this->title,
             'description' => $this->description,
             'active' => $this->active,

@@ -16,7 +16,6 @@ class Dial extends Model
 
     protected $fillable = [
         'url',
-        'img_source',
         'title',
         'description',
         'active'
@@ -57,7 +56,9 @@ class Dial extends Model
         }
 
         $this->url = $url;
-        $this->img_source = $img_source;
+        $this->images()->create([
+            'img_source' => $img_source
+        ]);
         $this->description = $description;
         $this->title = $title;
 
