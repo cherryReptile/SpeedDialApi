@@ -18,7 +18,6 @@ class DialFactory extends Factory
     {
         return [
             'url' => 'https://youtube.com',
-            'img_source' => $this->faker->title,
             'title' => $this->faker->title,
             'description' => $this->faker->text,
             'active' => true
