@@ -54,4 +54,13 @@ class ImageTest extends TestCase
         $getImage = $this->dial->images()->firstOrFail();
         $this->assertIsObject($getImage);
     }
+
+    public function test_join_image()
+    {
+        $this->test_create_image();
+        $joinViews = Image::imageJoin(Dial::class, 'dials', 'created_at', '>=', -1)
+            ->orderByDesc('id')
+            ->first();
+        $this->assertIsObject($joinViews);
+    }
 }
