@@ -25,6 +25,7 @@ RUN apt-get update && apt-get install -y \
     libpq-dev \
     wget \
     gnupg2 \
+    supervisor \
     git
 
 #Google-chrome repo
@@ -33,6 +34,10 @@ RUN wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key
 
 RUN apt-get update
 RUN apt-get -y install net-tools lsof google-chrome-stable
+
+# Supervisor
+#COPY ./docker/conf/supervisor/supervisord.ini /etc/supervisor/supervisord.ini
+#RUN sed -i "s/user=foo/user=${user}/g" /etc/supervisor/supervisord.ini
 
 #nodejs
 RUN curl -sL https://deb.nodesource.com/setup_14.x -o nodesource_setup.sh
@@ -80,3 +85,4 @@ RUN su -l $user -c "git clone https://github.com/zsh-users/zsh-autosuggestions $
 WORKDIR /var/www
 
 USER $user
+CMD ["/usr/bin/supervisord","-c","/etc/supervisor/supervisord.conf"]

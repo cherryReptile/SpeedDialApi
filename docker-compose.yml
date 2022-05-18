@@ -28,6 +28,7 @@ services:
     volumes:
       - ./:/var/www
       - ./docker/conf/php/project.ini:/usr/local/etc/php/conf.d/project.ini
+      - ./docker/conf/supervisor/supervisord.ini:/etc/supervisor/supervisord.conf
   db:
     image: postgres:alpine
     restart: unless-stopped
