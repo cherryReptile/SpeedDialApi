@@ -26,6 +26,7 @@ RUN apt-get update && apt-get install -y \
     wget \
     gnupg2 \
     supervisor \
+    htop \
     git
 
 #Google-chrome repo
