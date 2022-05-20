@@ -36,13 +36,16 @@ class SpeedDialController extends Controller
         /** @var Dial $dial */
         $dial = $category->dial()->create([
             'url' => $request->post('url'),
-            'img_source' => '',
             'title' => '',
             'description' => '',
             'active' => true
         ]);
 
         $dial->updateUrlInfo($request->post('url'));
+
+        if (!file_exists($dial->images()->firstOrFail()->img_source)) {
+            $dial->images()->firstOrFail()->img_source = null;
+        }
 
         return Response::json(DialResource::make($dial), 201);
     }
@@ -69,10 +72,6 @@ class SpeedDialController extends Controller
             ->dialThroughUser()
             ->where('dials.id', '=', $id)
             ->firstOrFail();
-
-        if (file_exists($dial->images()->firstOrFail()->img_source) != true) {
-            $dial->images()->firstOrFail()->img_source = null;
-        }
 
         if ($request->post('title') || $request->post('description')) {
             $dial->updateTitleOrDescription($request->post('title', ''), $request->post('description', ''));
