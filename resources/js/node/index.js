@@ -1,6 +1,6 @@
 const puppeteer = require('puppeteer-core');
 const argsProcess = process.argv.slice(2);
-let imgPath = 'img/' + argsProcess[1].toString() + '.png';
+let imgPath = 'speeddials/' + argsProcess[1].toString() + '.png';
 
 try{
 (async () => {
@@ -10,7 +10,7 @@ try{
     });
     const page = await browser.newPage();
     await page.goto(argsProcess[0].toString());
-    await page.screenshot({path: '/var/www/resources/js/node/' + imgPath});
+    await page.screenshot({path: '/var/www/storage/app/' + imgPath});
 
     await browser.close();
     await process.exit();

@@ -21,7 +21,7 @@ class Dial extends Model
         'active'
     ];
 
-    public const RESOURCE_PATH = '/var/www/resources/js/node/img/';
+    public const RESOURCE_PATH = '/var/www/storage/speeddials/';
 
     private string $url;
 
