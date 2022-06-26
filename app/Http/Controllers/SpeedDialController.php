@@ -43,10 +43,6 @@ class SpeedDialController extends Controller
 
         $dial->updateUrlInfo($request->post('url'));
 
-        if (!file_exists($dial->images()->firstOrFail()->img_source)) {
-            $dial->images()->firstOrFail()->img_source = null;
-        }
-
         return Response::json(DialResource::make($dial), 201);
     }
 
