@@ -29,6 +29,7 @@ services:
       - ./:/var/www
       - ./docker/conf/php/project.ini:/usr/local/etc/php/conf.d/project.ini
       - ./docker/conf/supervisor/supervisord.ini:/etc/supervisor/supervisord.conf
+      - ./docker/conf/redis/redis.conf:/etc/redis/redis.conf
   db:
     image: postgres:alpine
     restart: unless-stopped
@@ -47,6 +48,3 @@ services:
           POSTGRES_DB: test
           POSTGRES_USER: test
           POSTGRES_PASSWORD: test
-  redis:
-    image: redis:alpine
-    restart: unless-stopped
